@@ -4,10 +4,6 @@ import numpy as np
 from pymatgen.core import Structure, Lattice
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 
-# save primitive coordinates and conventional coordinates, handle labels: symbols(all), numbers(primitive only)
-# improve code to save lattice
-# add instance for atom numbers
-
 @dataclass
 class OutputAnalysis:
     """
@@ -18,19 +14,24 @@ class OutputAnalysis:
         - lines (list): The lines from the CRYSTAL output file.
         - lattice_vectors (list): The lattice vectors of the crystal in Angstrom.
         - lattice_angles (list): The lattice angles in degree.
-        - frac_coords (np.array): The fractional coordinates of the atoms in the asymmetric unit.
+        - conv_coords (list): The fractional coordinates of the atoms in the conventional unit.
+        - asym_coords (np.array): The fractional coordinates of the atoms in the asymetric unit.
+        - atom_labels (list): The labels of the atoms in the conventional unit.
+        - atom_numbers (list): The atomic numbers of the atoms in the asymetric unit.
     """
 
     lines: list
-    lattice_vectors: list = field(default_factory=list)
-    lattice_angles: list = field(default_factory=list)
-    frac_coords: np.array = field(default_factory=lambda: np.array([]))
-    atom_labels: np.array = field(default_factory=lambda: np.array([]))
+    lattice: list = field(default_factory=list)
+    conv_coords: list = field(default_factory=list)
+    asym_coords: np.array = field(default_factory=lambda: np.array([]))
+    atom_labels: list = field(default_factory=list)
+    atom_numbers: list = field(default_factory=list)
 
     def __post_init__(self):
         """
         Parse the lines after initialization.
         """
+
         self.parse_lines(self.lines)
 
     def parse_lines(self, lines):
@@ -40,10 +41,10 @@ class OutputAnalysis:
 
         :param lines: The lines from the CRYSTAL output file.
         """
+
         start_lattice = False
         start_coords = False
-        frac_coords = []
-        atom_labels = []
+        asym_coords = []
         for line in lines:
             # get lattice vectors and angles
             if "LATTICE PARAMETERS" in line:
@@ -60,14 +61,15 @@ class OutputAnalysis:
                 except ValueError:
                     continue
 
-                self.lattice_vectors = [float(i) for i in lattice[:3]]
-                self.lattice_angles = [float(i) for i in lattice[3:]]
+                self.lattice = [float(i) for i in lattice]
 
             # get fractional coordinates and atomic numbers
             elif "ATOMS IN THE ASYMMETRIC UNIT" in line:
                 start_coords = True
-                frac_coords = []
-                atom_labels = []
+                self.conv_coords = []
+                asym_coords = []
+                self.atom_labels = []
+                self.atom_numbers = []
             elif "T = ATOM BELONGING TO THE ASYMMETRIC UNIT" in line:
                 start_coords = False
             elif start_coords:
@@ -78,27 +80,37 @@ class OutputAnalysis:
                     float(coords[4])
                 except ValueError:
                     continue
-                # if coords[1] == "T":
-                frac_coords.append([float(coords[4]), float(coords[5]), float(coords[6])])
-                atom_labels.append(coords[3])
 
-        self.frac_coords = np.array(frac_coords)
-        self.atom_labels = np.array(atom_labels)
+                # Save the conventional coordinates and labels for space group determination
+                self.conv_coords.append([float(coords[4]), float(coords[5]), float(coords[6])])
+                self.atom_labels.append(coords[3])
 
-    def get_lattice(self):
+                # Save the asymetric coordinates and atomic numbers
+                if coords[1] == "T":
+                    asym_coords.append([coords[4], coords[5], coords[6]])
+                    self.atom_numbers.append(coords[2])
+
+        self.asym_coords = np.array(asym_coords)
+
+    def get_lattice(self) -> OrderedSet:
         """
         Get the lattice vectors and angles of the crystal and avoid duplicates.
 
         :return: A tuple containing the lattice vectors and lattice angles in ordered sets.
         """
 
-        lattice_vec = OrderedSet(self.lattice_vectors)
-        lattice_ang = OrderedSet(self.lattice_angles)
+        lattice_param = OrderedSet(self.lattice)
 
-        return lattice_vec, lattice_ang
+        return lattice_param
 
-    def get_frac_coords(self):
-        return self.atom_labels, self.frac_coords
+    def get_frac_coords(self) -> tuple:
+        """
+        Get the fractional coordinates of the atoms in the asymetric unit and their atomic numbers.
+
+        :return: A tuple of strings containing the atomic numbers and fractional coordinates.
+        """
+
+        return self.atom_numbers, self.asym_coords
     
     def get_space_group(self) -> int:
         """
@@ -109,20 +121,21 @@ class OutputAnalysis:
 
         # Create a pymatgen Lattice object
         lattice = Lattice.from_parameters(
-            a = self.lattice_vectors[0],
-            b = self.lattice_vectors[1],
-            c = self.lattice_vectors[2],
-            alpha = self.lattice_angles[0],
-            beta = self.lattice_angles[1],
-            gamma = self.lattice_angles[2],
-)
-        atomic_species = list(self.atom_labels)
+            a = self.lattice[0],
+            b = self.lattice[1],
+            c = self.lattice[2],
+            alpha = self.lattice[3],
+            beta = self.lattice[4],
+            gamma = self.lattice[5]
+        )
+        
+        atomic_species = self.atom_labels
 
         # Create a pymatgen Structure object
         structure = Structure(
             lattice=lattice,
             species=atomic_species,
-            coords=self.frac_coords,
+            coords=self.conv_coords
         )
 
         # Use SpacegroupAnalyzer to determine the space group
