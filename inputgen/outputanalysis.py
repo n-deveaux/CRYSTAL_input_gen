@@ -128,13 +128,11 @@ class OutputAnalysis:
             beta = self.lattice[4],
             gamma = self.lattice[5]
         )
-        
-        atomic_species = self.atom_labels
 
         # Create a pymatgen Structure object
         structure = Structure(
             lattice=lattice,
-            species=atomic_species,
+            species=self.atom_labels,
             coords=self.conv_coords
         )
 
