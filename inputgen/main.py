@@ -13,7 +13,7 @@ def main():
     parser.add_argument('-t', '--type', help='The type of input file to generate', default=None)
     parser.add_argument('-w', '--wavelength', help='The wavelength of the light source (nm)', default=None)
     parser.add_argument('-xcf', '--functional', help='The DFT exchange-correlation functional to use', default='wB97X')
-    parser.add_argument('-b', '--basis', help='The basis set to use', default='6-31Gd')
+    parser.add_argument('-b', '--basis', help='The basis set to use', default='6-31Gs')
     parser.add_argument('-s', '--shrink', help='The SHRINK parameters for the sampling of the first BZ', default='4 4')
     parser.add_argument('-t1', '--tolinteg1', help='The three first entries of the TOLINTEG parameter', default='7 7 7')
     parser.add_argument('-t2', '--tolinteg2', help='The two last entries of the TOLINTEG parameter', default='18 40')

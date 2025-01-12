@@ -1,6 +1,6 @@
 from pathlib import Path
+from ordered_set import OrderedSet
 
-# create _write_intro method
 # create exception if input_type is not 'chi2' or 'opt'
 # handle basis set
 
@@ -110,13 +110,45 @@ class InputGen:
     def _write_basis_set(self, file, basis):
         """
         Write the basis set to the file.
+        Handles the case where the basis set is not specified, defined as internal in CRYSTAL or custom.
 
         :param file: the file object to write to.
         :param basis: the basis set to use.
         """
 
-        file.write(f"{basis}\n")
-        file.write("ENDBS\n")
+        def _parse_basisset_file(basis_lines):
+            save_basis = False
+            basis_block = []
+            for line in basis_lines:
+                if "## New atom" in line:
+                    save_basis = False
+                    data = line.split()
+                    if data[3] in self.atom_numbers:
+                        save_basis = True
+                    else:
+                        continue
+                elif save_basis:
+                    basis_block.append(line)
+
+            return basis_block
+
+        if basis.upper() in ['STO-3G', 'STO-6G', 'POB-DZVP', 'POB-DZVPP', 'POB-TZVP', 'POB-DZVP-REV2', 'POB-TZVP-REV2']:
+            file.write(f"{basis.upper()}\n")
+            
+        else:
+            basis_file_path = Path(__file__).parent.parent / "basissets" / f"{basis.upper()}.txt"
+            try:
+                with open(basis_file_path, 'r') as basis_file:
+                    basis_lines = basis_file.readlines()
+                    basis = _parse_basisset_file(basis_lines)
+                
+                for i in basis:
+                    file.write(i)
+                file.write("\nENDBS\n")
+
+            except FileNotFoundError:
+                print(f"Error: The custom basis set '{basis}' is not available.")
+
     
     def _write_dft_block(self, file, functional, shrink, tolinteg1, tolinteg2):
         """
@@ -152,7 +184,7 @@ class InputGen:
         if input_type is None:
             pass
 
-        if input_type == 'chi2':
+        elif input_type.upper() in ['SHG', 'CHI2']:
             file.write("CPKS\n")
             file.write("THIRD\n")
 
@@ -165,9 +197,12 @@ class InputGen:
             file.write("150\n")
             file.write("END\n")
 
-        elif input_type == 'opt':
+        elif input_type.upper() == 'OPT':
             file.write("OPTGEOM\n")
             file.write("FULLGEOMOPT\n")
             file.write("END\n")
+
+        else:
+            raise KeyError(f"Error: The input type '{input_type}' is not supported.")
 
         file.write("END\n")
