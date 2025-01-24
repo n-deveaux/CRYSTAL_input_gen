@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "crystal_input_gen"
+version = "0.0.0"
+description = "Generate input files for the CRYSTAL code."
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Noah Deveaux", email = "noah.deveaux@unamur.be" }
+]
+
+maintainers = [
+    { name = "Noah Deveaux", email = "noah.deveaux@unamur.be" }
+]
+
+classifiers = [
+    # For a list of valid classifiers, see https://pypi.org/classifiers/
+    "Development Status :: 3 - Alpha",
+
+    "Intended Audience :: Developers",
+
+    "License :: OSI Approved :: MIT License",
+
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3 :: Only",
+]
+
+dependencies = [
+    "numpy",
+    "ordered-set",
+    "pymatgen"    
+]                     
+
+[tool.setuptools.packages.find]
+where = ["."]
+exclude = ["tests*"]
+
+[project.urls]
+Homepage = "https://github.com/n-deveaux/CRYSTAL_input_gen"
