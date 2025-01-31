@@ -38,9 +38,8 @@ dependencies = [
 [project.scripts]
 crystal_input_gen = "inputgen.main:main"
 
-[tool.setuptools.packages.find]
-where = ["."]
-exclude = ["tests*"]
+[tool.setuptools]
+packages = ["sos"]
 
 [project.urls]
 Homepage = "https://github.com/n-deveaux/CRYSTAL_input_gen"
