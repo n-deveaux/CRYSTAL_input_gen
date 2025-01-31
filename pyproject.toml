@@ -36,7 +36,7 @@ dependencies = [
 ]                     
 
 [project.scripts]
-crystal_input_gen = "inputgen.main:main"
+crystal-input-gen = "inputgen.main:main"
 
 [tool.setuptools]
 packages = ["inputgen"]
