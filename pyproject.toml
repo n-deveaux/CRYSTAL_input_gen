@@ -41,5 +41,8 @@ crystal-input-gen = "inputgen.main:main"
 [tool.setuptools.packages.find]
 where = ["."]
 
+[tool.setuptools.package-data]
+inputgen = ["../basisset/*.txt"]
+
 [project.urls]
 Homepage = "https://github.com/n-deveaux/CRYSTAL_input_gen"
