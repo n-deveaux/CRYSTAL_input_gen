@@ -133,9 +133,11 @@ class InputGen:
             return basis_block
 
         if basis.upper() in ['STO-3G', 'STO-6G', 'POB-DZVP', 'POB-DZVPP', 'POB-TZVP', 'POB-DZVP-REV2', 'POB-TZVP-REV2']:
+            file.write("BASISSET\n")
             file.write(f"{basis.upper()}\n")
             
         else:
+            file.write("END\n")
             basis_file_path = Path(__file__).parent.parent / "basissets" / f"{basis.upper()}.txt"
             try:
                 with open(basis_file_path, 'r') as basis_file:
@@ -144,7 +146,8 @@ class InputGen:
                 
                 for i in basis:
                     file.write(i)
-                file.write("\nENDBS\n")
+                file.write("99 0\n")
+                file.write("ENDBS\n")
 
             except FileNotFoundError:
                 print(f"Error: The custom basis set '{basis}' is not available.")
@@ -165,11 +168,11 @@ class InputGen:
         file.write(f"{functional}\n")
         file.write("END\n")
         file.write("TOLINTEG\n")
-        file.write(f"{tolinteg1} {tolinteg2}\n")
+        file.write(f"{tolinteg1} {tolinteg1} {tolinteg1} {tolinteg2[0]} {tolinteg2[1]}\n")
         file.write("SHRINK\n")
-        file.write(f"{shrink}\n")
+        file.write(f"{shrink} {shrink}\n")
         file.write("MAXCYCLE\n")
-        file.write("150\n")
+        file.write("100\n")
         file.write("END\n")
 
     def _write_type_info(self, file, input_type, wavelength):
@@ -204,5 +207,4 @@ class InputGen:
 
         else:
             raise KeyError(f"Error: The input type '{input_type}' is not supported.")
-
-        file.write("END\n")
+        
