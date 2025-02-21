@@ -1,9 +1,4 @@
 from pathlib import Path
-from ordered_set import OrderedSet
-
-# create exception if input_type is not 'chi2' or 'opt'
-# handle basis set
-
 
 class InputGen:
     """
