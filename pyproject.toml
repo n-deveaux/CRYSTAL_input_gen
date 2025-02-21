@@ -1,10 +1,12 @@
 [build-system]
-requires = ["setuptools>=42", "wheel"]
+requires = ["setuptools>=42", "wheel", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+version_scheme = "post-release"
 
 [project]
 name = "crystal_input_gen"
-version = "0.0.0"
 description = "Generate input files for the CRYSTAL code."
 readme = "README.md"
 license = { file = "LICENSE" }
