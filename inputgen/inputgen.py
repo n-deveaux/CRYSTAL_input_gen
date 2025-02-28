@@ -192,7 +192,7 @@ class InputGen:
                 file.write(f"{wavelength}\n")
 
             file.write("MAXCYCLE\n")
-            file.write("150\n")
+            file.write("100\n")
             file.write("END\n")
 
         elif input_type.upper() == 'OPT':
