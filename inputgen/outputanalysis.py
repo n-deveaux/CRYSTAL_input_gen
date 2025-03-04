@@ -32,9 +32,9 @@ class OutputAnalysis:
         Parse the lines after initialization.
         """
 
-        self.parse_lines(self.lines)
+        self._parse_lines(self.lines)
 
-    def parse_lines(self, lines):
+    def _parse_lines(self, lines):
         """
         Parse the lines from the CRYSTAL output file to extract lattice vectors, angles, and fractional coordinates.
         Only the last occurrence is saved (useful when extracting from geometry optimizations).
