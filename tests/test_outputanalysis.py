@@ -41,7 +41,7 @@ class TestOutputAnalysis(unittest.TestCase):
         """
 
         lattice = self.output_analysis.get_lattice()
-        self.assertEqual(len(lattice), 5)
+        self.assertEqual(len(lattice), 6)
 
     def test_get_frac_coords(self):
         """

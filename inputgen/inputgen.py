@@ -1,3 +1,4 @@
+from ordered_set import OrderedSet
 from pathlib import Path
 
 class InputGen:
@@ -80,15 +81,22 @@ class InputGen:
 
     def _write_lattice(self, file):
         """
-        Write lattice parameters to the file.
+        Write lattice parameters to the file. 
+        Handle the case where the lattice is degenerate but the strcuture triclinic.
 
         :param file: the file object to write to.
         """
 
-        for param in self.lattice:
-            if float(param) in [90., 120.]:
-                continue
-            file.write(f"{param} ")
+        if self.space_group not in [1, 2]:
+            non_degenerate_lattiece = OrderedSet(self.lattice)
+            for param in non_degenerate_lattiece:
+                if float(param) in [90., 120.]:
+                    continue
+                file.write(f"{param} ")
+        else:
+            for param in self.lattice:
+                file.write(f"{param} ")
+        
         file.write("\n")
 
     def _write_atomic_coordinates(self, file):
