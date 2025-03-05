@@ -35,11 +35,11 @@ dependencies = [
 crystal-input-gen = "inputgen.main:main"
 
 [tool.setuptools.packages.find]
-where = ["."]
+where = ["inputgen"]
 exclude = ["tests*"]
 
 [tool.setuptools.package-data]
-inputgen = ["basissets/*.txt"]
+basissets = ["*.txt"]
 
 [project.urls]
 Homepage = "https://github.com/n-deveaux/CRYSTAL_input_gen"
