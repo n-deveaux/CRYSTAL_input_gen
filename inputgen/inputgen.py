@@ -1,6 +1,8 @@
 from ordered_set import OrderedSet
 from pathlib import Path
 
+BASIS_DIRECTORY = Path(__file__).parent / "basissets"
+
 class InputGen:
     """
     A class to generate a new CRYSTAL input file based on the extracted data
@@ -141,7 +143,7 @@ class InputGen:
             
         else:
             file.write("END\n")
-            basis_file_path = Path(__file__).parent.parent / "basissets" / f"{basis.upper()}.txt"
+            basis_file_path = BASIS_DIRECTORY / f"{basis.upper()}.txt"
             try:
                 with open(basis_file_path, 'r') as basis_file:
                     basis_lines = basis_file.readlines()
