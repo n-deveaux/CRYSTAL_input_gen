@@ -21,8 +21,6 @@ This will install the following dependencies:
 - `ordered-set`
 - `pymatgen`
 
-See the [requirements](requirements.txt) file.
-
 ## Usage
 
 Run the `crystal-input-gen` script to read a CRYSTAL output file and generate a new input file:
