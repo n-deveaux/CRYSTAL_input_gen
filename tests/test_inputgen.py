@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 import os
 
-from inputgen.inputgen import InputGen
+from inputgen.inputgen import InputGen, BASIS_DIRECTORY
 from inputgen.outputanalysis import OutputAnalysis
 
 class TestInputGen(unittest.TestCase):
@@ -14,6 +14,8 @@ class TestInputGen(unittest.TestCase):
     def setUp(self):
         """
         Set up the test case by creating a mock OutputAnalysis object.
+
+        Link to an example output file for further tests. 
         """
 
         self.output_analysis = OutputAnalysis(lines=[])
@@ -35,6 +37,8 @@ class TestInputGen(unittest.TestCase):
                                                      [-4.144057781498E-01,  6.226556319445E-17, -5.000000000000E-01],
                                                      [ 4.144057781498E-01,  4.144057781498E-01, -5.000000000000E-01]])
         self.output_analysis.atom_labels = ["O", "O", "Si", "Si", "Si", "Si", "O", "O", "O", "O", "O", "O"]
+
+        self.slurm_file_path = 'tests/test_output/slurm-999085.out'
 
     def test_write_intro(self):
         """
@@ -80,22 +84,44 @@ class TestInputGen(unittest.TestCase):
     def test_write_lattice(self):
         """
         Test the _write_lattice function of the InputGen class.
+        This test verifies the correct writing of lattice parameters to a file depending 
+        on the degeneracy of the lattice and the space group.
         """
-
+        # Test with a degenerate lattice where 90° and 120° angles should be removed.
         gen_lattice = InputGen(self.output_analysis)
-        test_lattice_file = "tests/test_lattice.d12"
+        test_degen_lattice_file = "tests/test_degen_lattice.d12"
 
-        with open(test_lattice_file, 'w') as f:
+        with open(test_degen_lattice_file, 'w') as f:
             gen_lattice._write_lattice(f)
 
-        with open(test_lattice_file, 'r') as f:
+        with open(test_degen_lattice_file, 'r') as f:
             content = f.read()
             self.assertEqual(content.count("5.12731"), 1)
             self.assertEqual(content.count("8.70046"), 1)
             self.assertNotIn("90.0", content)
             self.assertNotIn("120.0", content)
 
-        os.remove(test_lattice_file)
+        # Test with a non-degenerate lattice where 90° angles should be kept.
+        with open(self.slurm_file_path, 'r') as f:
+            other_content = f.readlines()
+
+        additional_gen_lattice = OutputAnalysis(lines=other_content)
+        test_nondegen_lattice_file = "tests/test_nondegen_lattice.d12"
+
+        gen_nondegen_lattice = InputGen(additional_gen_lattice)
+
+        with open(test_nondegen_lattice_file, 'w') as f:
+            gen_nondegen_lattice._write_lattice(f)
+
+        with open(test_nondegen_lattice_file, 'r') as f:
+            content = f.read()
+            self.assertEqual(content.count("29.478"), 1)
+            self.assertEqual(content.count("7.0271"), 1)
+            self.assertEqual(content.count("90."), 2)
+            self.assertEqual(content.count("99.209"), 1)
+
+        os.remove(test_degen_lattice_file)
+        os.remove(test_nondegen_lattice_file)
 
     def test_write_atomic_coordinates(self):
         """
@@ -121,8 +147,10 @@ class TestInputGen(unittest.TestCase):
         """
 
         gen_basis = InputGen(self.output_analysis)
-        test_basis_file = "tests/test_basis_set.d12"
+        test_basis_file = "tests/internal_basis.d12"
+        custom_basis_file = "tests/custom_basis.d12"
 
+        # Test with an internal basis set
         with open(test_basis_file, 'w') as f:
             gen_basis._write_basis_set(f, basis="POB-DZVP-REV2")
 
@@ -131,7 +159,18 @@ class TestInputGen(unittest.TestCase):
             self.assertIn("POB-DZVP-REV2", content)
             self.assertEqual(content.count("END"), 0)
 
+        # Test with a custom basis set
+        with open(custom_basis_file, 'w') as f:
+            gen_basis._write_basis_set(f, basis="6-311Gs")
+
+        with open(custom_basis_file, 'r') as f:
+            content = f.read()
+            self.assertIn("END", content)
+            self.assertIn("99 0", content)
+            self.assertIn("ENDBS", content)
+
         os.remove(test_basis_file)
+        os.remove(custom_basis_file)
 
     def test_write_dft_block(self):
         """
