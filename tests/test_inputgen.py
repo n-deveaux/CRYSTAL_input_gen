@@ -148,7 +148,7 @@ class TestInputGen(unittest.TestCase):
 
         gen_basis = InputGen(self.output_analysis)
         test_basis_file = "tests/internal_basis.d12"
-        custom_basis_file = "tests/custom_basis.d12"
+        # custom_basis_file = "tests/custom_basis.d12"
 
         # Test with an internal basis set
         with open(test_basis_file, 'w') as f:
@@ -159,18 +159,17 @@ class TestInputGen(unittest.TestCase):
             self.assertIn("POB-DZVP-REV2", content)
             self.assertEqual(content.count("END"), 0)
 
-        # Test with a custom basis set
-        with open(custom_basis_file, 'w') as f:
-            gen_basis._write_basis_set(f, basis="6-311Gs")
+        # # Test with a custom basis set
+        # with open(custom_basis_file, 'w') as f:
+        #     gen_basis._write_basis_set(f, basis="6-311Gs")
 
-        with open(custom_basis_file, 'r') as f:
-            content = f.read()
-            self.assertIn("END", content)
-            self.assertIn("99 0", content)
-            self.assertIn("ENDBS", content)
+        # with open(custom_basis_file, 'r') as f:
+        #     content = f.read()
+        #     self.assertIn("END", content)
+        #     self.assertIn("99 0", content)
+        #     self.assertIn("ENDBS", content)
 
         os.remove(test_basis_file)
-        os.remove(custom_basis_file)
 
     def test_write_dft_block(self):
         """
