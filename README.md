@@ -44,24 +44,24 @@ crystal-input-gen <inputfile> -t <type> -w <wavelength> -xcf <functional> -b <ba
 
 The following basis sets are supported for all the atoms of the periodic table, since they are used as `CRYSTAL23` internal basis sets (see [user manual](https://www.crystal.unito.it/include/manuals/crystal23.pdf) for more details).
 
-```python
-custom_basis_sets = ["STO-3G", "STO-6G", "POB-DZVP", "POB-DZVPP", "POB-TZVP", "POB-DZVP-REV2", "POB-TZVP-REV2"]
+```
+internal_basis_sets = ["STO-3G", "STO-6G", "POB-DZVP", "POB-DZVPP", "POB-TZVP", "POB-DZVP-REV2", "POB-TZVP-REV2"]
 ```
 
 Additionally, custom basis sets can be specified by providing the name of a basis set available in the `basissets` directory. In the latter, the following basis sets are available
 
-```python
-internal_basis_sets = ["6-31G", "6-31G2(2df,p)", "6-31G*", "6-31G**", "6-311G", "6-311G*", "6-311G**", "cc-PVDZ", "cc-PVTZ", "cc-PVQZ", "def2-SVP", "def2-SVPD", "def2-TZVP", "Ahlrichs VDZ", "pVDZ", "VTZ"]
+```
+custom_basis_sets = ["6-31G", "6-31G2(2df,p)", "6-31G*", "6-31G**", "6-311G", "6-311G*", "6-311G**", "cc-PVDZ", "cc-PVTZ", "cc-PVQZ", "def2-SVP", "def2-SVPD", "def2-TZVP", "Ahlrichs VDZ", "pVDZ", "VTZ"]
 ```
 
 for the following atoms
-```python
+```
 atoms = ["H", "B", "C", "N", "O", "F", "Al", "Si", "P", "S", "Cl"]
 ```
 These custom basis sets originate from the [Basis Set Exchange](https://www.basissetexchange.org) platform, and the orbital occupancies were filled
-according to a *Klechkowski* (or *Madelung*) -like fashion.
+according to a [*Klechkowski*](https://fr.wikipedia.org/wiki/Règle_de_Klechkowski) (or *Madelung*) -like fashion.
 
-**Note:** The current version of the code only allows defining one basis set for all atoms.
+**Note:** the current version of the code only allows defining one basis set for all atoms.
 
 ## Contributing
 
