@@ -144,18 +144,15 @@ class InputGen:
         else:
             file.write("END\n")
             basis_file_path = BASIS_DIRECTORY / f"{basis.upper()}.txt"
-            try:
-                with open(basis_file_path, 'r') as basis_file:
-                    basis_lines = basis_file.readlines()
-                    basis = _parse_basisset_file(basis_lines)
-                
-                for i in basis:
-                    file.write(i)
-                file.write("99 0\n")
-                file.write("ENDBS\n")
-
-            except FileNotFoundError:
-                print(f"Error: The custom basis set '{basis}' is not available.")
+   
+            with open(basis_file_path, 'r') as basis_file:
+                basis_lines = basis_file.readlines()
+                basis = _parse_basisset_file(basis_lines)
+            
+            for i in basis:
+                file.write(i)
+            file.write("99 0\n")
+            file.write("ENDBS\n")
 
     
     def _write_dft_block(self, file, functional, shrink, tolinteg1, tolinteg2):
