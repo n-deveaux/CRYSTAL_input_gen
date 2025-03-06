@@ -31,7 +31,9 @@ def main():
 
     # Generate the input file
     gen = InputGen(output_analysis)
-    gen.generate_input(args.type,
+    
+    try:
+        gen.generate_input(args.type,
                        args.wavelength,
                        args.functional,
                        args.basis,
@@ -39,4 +41,7 @@ def main():
                        args.tolinteg1,
                        args.tolinteg2
                        )
+    
+    except Exception:
+        print("Error in the generation of the input file.")
 

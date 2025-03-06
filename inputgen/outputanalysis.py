@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from ordered_set import OrderedSet
 import numpy as np
 from pymatgen.core import Structure, Lattice
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
@@ -92,14 +91,14 @@ class OutputAnalysis:
 
         self.asym_coords = np.array(asym_coords)
 
-    def get_lattice(self) -> OrderedSet:
+    def get_lattice(self) -> np.array:
         """
         Get the lattice vectors and angles of the crystal and avoid duplicates.
 
-        :return: A tuple containing the lattice vectors and lattice angles in ordered sets.
+        :return: A numpy array containing the lattice vectors and lattice angles.
         """
 
-        lattice_param = OrderedSet(self.lattice)
+        lattice_param = np.array(self.lattice)
 
         return lattice_param
 

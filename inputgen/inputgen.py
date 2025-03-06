@@ -1,4 +1,7 @@
+from ordered_set import OrderedSet
 from pathlib import Path
+
+BASIS_DIRECTORY = Path(__file__).parent / "basissets"
 
 class InputGen:
     """
@@ -80,15 +83,22 @@ class InputGen:
 
     def _write_lattice(self, file):
         """
-        Write lattice parameters to the file.
+        Write lattice parameters to the file. 
+        Handle the case where the lattice is degenerate but the strcuture triclinic.
 
         :param file: the file object to write to.
         """
 
-        for param in self.lattice:
-            if float(param) in [90., 120.]:
-                continue
-            file.write(f"{param} ")
+        if self.space_group not in [1, 2]:
+            non_degenerate_lattiece = OrderedSet(self.lattice)
+            for param in non_degenerate_lattiece:
+                if float(param) in [90., 120.]:
+                    continue
+                file.write(f"{param} ")
+        else:
+            for param in self.lattice:
+                file.write(f"{param} ")
+        
         file.write("\n")
 
     def _write_atomic_coordinates(self, file):
@@ -133,19 +143,16 @@ class InputGen:
             
         else:
             file.write("END\n")
-            basis_file_path = Path(__file__).parent.parent / "basissets" / f"{basis.upper()}.txt"
-            try:
-                with open(basis_file_path, 'r') as basis_file:
-                    basis_lines = basis_file.readlines()
-                    basis = _parse_basisset_file(basis_lines)
-                
-                for i in basis:
-                    file.write(i)
-                file.write("99 0\n")
-                file.write("ENDBS\n")
-
-            except FileNotFoundError:
-                print(f"Error: The custom basis set '{basis}' is not available.")
+            basis_file_path = BASIS_DIRECTORY / f"{basis.upper()}.txt"
+   
+            with open(basis_file_path, 'r') as basis_file:
+                basis_lines = basis_file.readlines()
+                basis = _parse_basisset_file(basis_lines)
+            
+            for i in basis:
+                file.write(i)
+            file.write("99 0\n")
+            file.write("ENDBS\n")
 
     
     def _write_dft_block(self, file, functional, shrink, tolinteg1, tolinteg2):
