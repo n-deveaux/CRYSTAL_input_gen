@@ -39,7 +39,7 @@ where = ["."]
 exclude = ["tests*"]
 
 [tool.setuptools.package-data]
-"*" = ["*.txt"]
+inputgen = ["basissets/*.txt"]
 
 [project.urls]
 Homepage = "https://github.com/n-deveaux/CRYSTAL_input_gen"
