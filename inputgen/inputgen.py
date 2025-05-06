@@ -204,7 +204,7 @@ class InputGen:
 
         elif input_type.upper() == 'OPT':
             file.write("OPTGEOM\n")
-            file.write("FULLGEOMOPT\n")
+            file.write("FULLOPTG\n")
             file.write("END\n")
 
         else:
