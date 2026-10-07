@@ -82,7 +82,7 @@ class OutputAnalysis:
 
                 # Save the conventional coordinates and labels for space group determination
                 self.conv_coords.append([float(coords[4]), float(coords[5]), float(coords[6])])
-                self.atom_labels.append(coords[3])
+                self.atom_labels.append(coords[3].capitalize())
 
                 # Save the asymetric coordinates and atomic numbers
                 if coords[1] == "T":
